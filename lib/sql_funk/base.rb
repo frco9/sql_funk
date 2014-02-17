@@ -15,10 +15,28 @@ module SqlFunk
       options[:group_column] ||= options[:group_by]
 
       date_func = case options[:group_by]
+      when "second"
+        case ActiveRecord::Base.connection.adapter_name.downcase
+        when /^sqlite/ then "STRFTIME(\"%Y-%m-%d %H:%i:%s\", #{column_name})"
+        when /^mysql/ then "DATE_FORMAT(#{column_name}, \"%Y-%m-%d %H:%i:%s\")"
+        when /^postgresql/ then "DATE_TRUNC('second', #{column_name})"
+        end
+      when "minute"
+        case ActiveRecord::Base.connection.adapter_name.downcase
+        when /^sqlite/ then "STRFTIME(\"%Y-%m-%d %H:%i\", #{column_name})"
+        when /^mysql/ then "DATE_FORMAT(#{column_name}, \"%Y-%m-%d %H:%i\")"
+        when /^postgresql/ then "DATE_TRUNC('minute', #{column_name})"
+        end
+      when "hour"
+        case ActiveRecord::Base.connection.adapter_name.downcase
+        when /^sqlite/ then "STRFTIME(\"%Y-%m-%d %H\", #{column_name})"
+        when /^mysql/ then "DATE_FORMAT(#{column_name}, \"%Y-%m-%d %H\")"
+        when /^postgresql/ then "DATE_TRUNC('hour', #{column_name})"
+        end
       when "day"
         case ActiveRecord::Base.connection.adapter_name.downcase
         when /^sqlite/ then "STRFTIME(\"%Y-%m-%d\", #{column_name})"
-        when /^mysql/ then "DATE(#{column_name})"
+        when /^mysql/ then "DATE_FORMAT(#{column_name}, \"%Y-%m-%d\")"
         when /^postgresql/ then "DATE_TRUNC('day', #{column_name})"
         end
       when "month"
