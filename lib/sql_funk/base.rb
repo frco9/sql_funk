@@ -53,7 +53,7 @@ module SqlFunk
         end
       end
 
-      self.select("#{date_func} AS date, COUNT(*) AS count_all").group(options[:group_column]).order("#{options[:group_column]} #{options[:order]}")
+      self.select("#{date_func} AS #{options[:group_column]}, COUNT(*) AS count_all").group(options[:group_column]).order("#{options[:group_column]} #{options[:order]}")
     end
     # 
     # def method_missing(id, *args, &block)
